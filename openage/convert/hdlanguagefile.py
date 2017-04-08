@@ -21,13 +21,18 @@ def read_age2_hd_fe_stringresources(stringres, path):
 
     count = 0
 
+
     # multiple string files in the program source dir
     for lang in path.list():
         try:
             if lang == b'_common':
                 continue
+            if lang == b'_packages':
+                continue
+            if lang.lower() == b'.ds_store'.lower():
+                continue
 
-            langfilename = ["resources", lang.decode(),
+            langfilename = [lang.decode(),
                             "strings", "key-value",
                             "key-value-strings-utf8.txt"]
 
