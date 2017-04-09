@@ -66,19 +66,25 @@ GuiSeparateRenderingContext::GuiSeparateRenderingContext(SDL_Window *window)
 		this->main_ctx.create();
 		assert(this->main_ctx.isValid());
 
+#ifndef __APPLE__
 		auto context_debug_parameters = get_current_opengl_debug_parameters(this->main_ctx);
+#endif
 
 		this->ctx.setFormat(this->main_ctx.format());
 		this->ctx.setShareContext(&this->main_ctx);
 		this->ctx.create();
 		assert(this->ctx.isValid());
+#ifndef __APPLE__
 		assert(!(this->main_ctx.format().options() ^ this->ctx.format().options()).testFlag(QSurfaceFormat::DebugContext));
+#endif
 
 		this->offscreen_surface.setFormat(this->ctx.format());
 		this->offscreen_surface.create();
 
 		this->pre_render();
+#ifndef __APPLE__
 		apply_opengl_debug_parameters(context_debug_parameters, this->ctx);
+#endif
 		this->post_render();
 	} else {
 		throw CtxExtractionException("creating separate context for GUI failed");
