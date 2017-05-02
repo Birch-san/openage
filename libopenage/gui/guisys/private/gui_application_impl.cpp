@@ -8,6 +8,12 @@
 #include <QtGlobal>
 #include <QtDebug>
 
+#ifdef __APPLE__
+#include <QThread>
+#include <QCoreApplication>
+#include <QEventLoop>
+#endif
+
 namespace qtsdl {
 
 std::weak_ptr<GuiApplicationImpl> GuiApplicationImpl::instance;
@@ -29,6 +35,12 @@ void GuiApplicationImpl::processEvents() {
 #ifndef __APPLE__
 	this->app.processEvents();
 #endif
+// #ifdef __APPLE__
+// 	if (QThread::currentThread() != QCoreApplication::instance()->thread())
+// 		this->app.processEvents(QEventLoop::AllEvents, 100);
+// #else
+// 	this->app.processEvents();
+// #endif
 }
 
 namespace {

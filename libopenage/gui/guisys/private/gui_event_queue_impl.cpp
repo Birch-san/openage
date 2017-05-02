@@ -8,6 +8,7 @@
 
 #ifdef __APPLE__
 #include <QCoreApplication>
+#include <QEventLoop>
 #endif
 
 #include "../public/gui_event_queue.h"
@@ -30,7 +31,7 @@ void GuiEventQueueImpl::process_callbacks() {
 	assert(QThread::currentThread() == this->thread);
 #ifdef __APPLE__
 	if (QThread::currentThread() != QCoreApplication::instance()->thread())
-		this->callback_processor.processEvents();
+		this->callback_processor.processEvents(QEventLoop::AllEvents, 100);
 #else
 	this->callback_processor.processEvents();
 #endif
