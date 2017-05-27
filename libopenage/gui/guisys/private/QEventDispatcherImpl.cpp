@@ -10,6 +10,9 @@ qtsdl::QEventDispatcherImpl::QEventDispatcherImpl(QObject *parent)
   : QAbstractEventDispatcher(parent) {
 }
 
+qtsdl::QEventDispatcherImpl::~QEventDispatcherImpl() {
+}
+
 bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags flags) {
     return true;
 }

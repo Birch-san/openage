@@ -7,6 +7,8 @@
 namespace qtsdl {
 
 class QEventDispatcherImpl : public QAbstractEventDispatcher {
+	Q_OBJECT
+	
     public:
         QEventDispatcherImpl(QObject *parent);
         ~QEventDispatcherImpl();
