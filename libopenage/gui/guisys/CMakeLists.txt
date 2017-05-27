@@ -19,6 +19,7 @@ list(APPEND QT_SDL_SOURCES
 
 list(APPEND QT_SDL_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/private/game_logic_caller.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/private/QEventDispatcherImpl.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/private/gui_application_impl.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/private/gui_callback.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/private/gui_ctx_setup.cpp

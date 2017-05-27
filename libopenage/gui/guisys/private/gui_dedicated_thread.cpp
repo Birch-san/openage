@@ -6,8 +6,10 @@
 #include <condition_variable>
 
 #include <QCoreApplication>
+#include <QThread>
 
 #include "gui_application_impl.h"
+#include "QEventDispatcherImpl.h"
 
 namespace qtsdl {
 
@@ -28,6 +30,8 @@ GuiDedicatedThread::GuiDedicatedThread()
 	std::condition_variable proceed_cond;
 
 	this->worker = std::thread{[&] {
+		QCoreApplication::instance()->setEventDispatcher(new QEventDispatcherImpl(QAbstractEventDispatcher::instance(QThread::currentThread())));
+
 		auto app = GuiApplicationImpl::get();
 
 		{
@@ -36,6 +40,12 @@ GuiDedicatedThread::GuiDedicatedThread()
 		}
 
 		proceed_cond.notify_one();
+
+		// https://doc.qt.io/qt-5/qobject.html#installEventFilter
+
+		// QAbstractEventDispatcher::EventFilter origEventFiler;
+		// QAbstractEventDispatcher* d = QAbstractEventDispatcher::instance();
+		// origEventFiler = d->setEventFilter(digicongEventFilter);
 
 		QCoreApplication::instance()->exec();
 	}};
