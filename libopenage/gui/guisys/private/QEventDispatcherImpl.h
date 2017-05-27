@@ -10,7 +10,7 @@ class QEventDispatcherImpl : public QAbstractEventDispatcher {
 	Q_OBJECT
 	
     public:
-        QEventDispatcherImpl(QObject *parent);
+        QEventDispatcherImpl(QObject *parent = Q_NULLPTR);
         ~QEventDispatcherImpl();
 
         virtual bool processEvents(QEventLoop::ProcessEventsFlags flags);

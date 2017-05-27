@@ -30,7 +30,7 @@ GuiDedicatedThread::GuiDedicatedThread()
 	std::condition_variable proceed_cond;
 
 	this->worker = std::thread{[&] {
-		QCoreApplication::instance()->setEventDispatcher(new QEventDispatcherImpl(QAbstractEventDispatcher::instance(QThread::currentThread())));
+		QCoreApplication::instance()->setEventDispatcher(new QEventDispatcherImpl());
 
 		auto app = GuiApplicationImpl::get();
 
