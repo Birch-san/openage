@@ -4,6 +4,8 @@
 
 #include <QAbstractEventDispatcher>
 #include <QEventLoop>
+#include <QAtomicInt>
+
 namespace qtsdl {
 
 class QEventDispatcherImpl : public QAbstractEventDispatcher {
@@ -37,6 +39,9 @@ class QEventDispatcherImpl : public QAbstractEventDispatcher {
 
 	    virtual void startingUp();
 	    virtual void closingDown();
+
+	protected:
+		QAtomicInt interruptor;
 };
 
 } // namespace qtsdl

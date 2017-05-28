@@ -3,6 +3,9 @@
 #include <QAbstractEventDispatcher>
 #include <QObject>
 #include <QList>
+#include <QEventLoop>
+#include <QCoreApplication>
+// #include <QWindowSystemInterface>
 
 namespace qtsdl {
 
@@ -14,7 +17,61 @@ qtsdl::QEventDispatcherImpl::~QEventDispatcherImpl() {
 }
 
 bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags flags) {
-    return true;
+    interruptor.store(0);
+    //QCoreApplicationPrivate::sendPostedEvents(0, 0, d->threadData); //unix dispatcher use this
+    QCoreApplication::sendPostedEvents(); //glib dispatcher call this after every call of "awake".
+
+    const bool canWait = (/*d->threadData->canWaitLocked()
+                          &&*/ !interruptor.load() //it may have been set during the call of QCoreApplication::sendPostedEvents()
+&& (flags & QEventLoop::WaitForMoreEvents));
+
+    if (interruptor.load())
+    {
+        return false; //unix event dispatcher returns false if nothing more than "postedEvents" were dispatched
+    }
+
+    // if (!(flags & QEventLoop::X11ExcludeTimers)) {
+    //     d->timerStart();
+    // }
+
+    int total_events = 0; /* FIXME: +1 for stop? */
+
+    if (canWait) {
+        //run at least one handler - may block
+        emit aboutToBlock();
+        // d->io_service.reset();
+        // total_events += d->io_service.run_one();
+        emit awake();
+    }
+
+    int events;
+    do
+    {
+        // if (!(flags & QEventLoop::X11ExcludeTimers)) {
+        //     d->timerStart();
+        // }
+
+        // d->io_service.reset();
+        //run all ready handlers
+        // events = d->io_service.poll();
+
+        if ((flags & QEventLoop::ExcludeSocketNotifiers)) {
+            //FIXME: ignore stream descriptors
+        }
+
+        if ((flags & QEventLoop::X11ExcludeTimers)) {
+            //FIXME: ignore timers?
+        }
+
+        total_events += events;
+        QCoreApplication::sendPostedEvents();
+        // total_events += QWindowSystemInterface::sendWindowSystemEvents(flags) ? 1 : 0;
+    } while(events>0);
+
+    // d->cleanupSocketNotifiers();
+
+    // return true if we handled events, false otherwise
+    return (total_events > 0);
 }
 bool qtsdl::QEventDispatcherImpl::hasPendingEvents() { // ### Qt6: remove, mark final or make protected
     return true;
