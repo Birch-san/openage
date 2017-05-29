@@ -5,6 +5,7 @@
 #include <QList>
 #include <QEventLoop>
 #include <QCoreApplication>
+#include <QtDebug> 
 // #include <QWindowSystemInterface>
 
 namespace qtsdl {
@@ -22,6 +23,7 @@ qtsdl::QEventDispatcherImpl::~QEventDispatcherImpl() {
 * https://github.com/peper0/qtasio/blob/master/qasioeventdispatcher.h
 */
 bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags flags) {
+    qWarning() << "processFlags()";
     interruptor.store(0);
     //QCoreApplicationPrivate::sendPostedEvents(0, 0, d->threadData); //unix dispatcher use this
     QCoreApplication::sendPostedEvents(); //glib dispatcher call this after every call of "awake".
@@ -79,51 +81,63 @@ bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags f
     return (total_events > 0);
 }
 bool qtsdl::QEventDispatcherImpl::hasPendingEvents() { // ### Qt6: remove, mark final or make protected
+    qWarning() << "hasPendingEvents()";
     return true;
 }
 
 void qtsdl::QEventDispatcherImpl::registerSocketNotifier(QSocketNotifier *notifier) {
-
+    qWarning() << "registerSocketNotifier()";
 }
 void qtsdl::QEventDispatcherImpl::unregisterSocketNotifier(QSocketNotifier *notifier) {
-
+    qWarning() << "unregisterSocketNotifier()";
 }
 
 void qtsdl::QEventDispatcherImpl::registerTimer(int timerId, int interval, Qt::TimerType timerType, QObject *object) {
-
+    qWarning() << "registerTimer()";
 }
 bool qtsdl::QEventDispatcherImpl::unregisterTimer(int timerId) {
+    qWarning() << "unregisterTimer()";
     return true;
 }
 bool qtsdl::QEventDispatcherImpl::unregisterTimers(QObject *object) {
+    qWarning() << "unregisterTimers()";
     return true;
 }
 QList<QAbstractEventDispatcher::TimerInfo> qtsdl::QEventDispatcherImpl::registeredTimers(QObject *object) const {
+    qWarning() << "registeredTimers()";
     return *new QList<QAbstractEventDispatcher::TimerInfo>();
 }
 
 int qtsdl::QEventDispatcherImpl::remainingTime(int timerId) {
+    qWarning() << "remainingTime()";
     return 0;
 }
 
 #ifdef Q_OS_WIN
 bool qtsdl::QEventDispatcherImpl::registerEventNotifier(QWinEventNotifier *notifier) {
+    qWarning() << "registerEventNotifier()";
     return true;
 }
 void qtsdl::QEventDispatcherImpl::unregisterEventNotifier(QWinEventNotifier *notifier) {
+    qWarning() << "unregisterEventNotifier()";
 }
 #endif
 
 void qtsdl::QEventDispatcherImpl::wakeUp() {
+    qWarning() << "wakeUp()";
 }
 void qtsdl::QEventDispatcherImpl::interrupt() {
+    qWarning() << "interrupt()";
 }
 void qtsdl::QEventDispatcherImpl::flush() {
+    qWarning() << "flush()";
 }
 
 void qtsdl::QEventDispatcherImpl::startingUp() {
+    qWarning() << "startingUp()";
 }
 void qtsdl::QEventDispatcherImpl::closingDown() {
+    qWarning() << "closingDown()";
 }
 
 } // namespace qtsdl
