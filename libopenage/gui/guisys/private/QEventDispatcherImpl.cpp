@@ -16,6 +16,11 @@ qtsdl::QEventDispatcherImpl::QEventDispatcherImpl(QObject *parent)
 qtsdl::QEventDispatcherImpl::~QEventDispatcherImpl() {
 }
 
+/**
+* Mostly I am copying from (MIT License, peper0@GitHub):
+* https://github.com/peper0/qtasio/blob/master/qasioeventdispatcher.cpp
+* https://github.com/peper0/qtasio/blob/master/qasioeventdispatcher.h
+*/
 bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags flags) {
     interruptor.store(0);
     //QCoreApplicationPrivate::sendPostedEvents(0, 0, d->threadData); //unix dispatcher use this
