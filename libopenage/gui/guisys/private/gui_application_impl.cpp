@@ -45,14 +45,13 @@ GuiApplicationImpl::GuiApplicationImpl()
 	// app{(QCoreApplication::setEventDispatcher(&this->event_dispatcher), argc), &argv}
 	app{argc, &argv}
 {
-	qDebug() << "Installing event filters...";
-	this->app.installNativeEventFilter(&this->native_event_filter);
-	this->app.installEventFilter(&this->event_filter);
-
 	// Set locale back to POSIX for the decimal point parsing (see qcoreapplication.html#locale-settings).
 	std::locale::global(std::locale().combine<std::numpunct<char>>(std::locale::classic()));
 
 	qInfo() << "Compiled with Qt" << QT_VERSION_STR << "and run with Qt" << qVersion();
+	qInfo() << "Installing event filters...";
+	this->app.installNativeEventFilter(&this->native_event_filter);
+	this->app.installEventFilter(&this->event_filter);
 }
 
 } // namespace qtsdl

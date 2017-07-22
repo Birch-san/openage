@@ -6,10 +6,10 @@
 
 bool KeyPressEater::eventFilter(QObject *obj, QEvent *event)
 {
-    qDebug() << "EVENT";
+    qInfo() << "EVENT";
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        qDebug("Ate key press %d", keyEvent->key());
+        qInfo("Ate key press %d", keyEvent->key());
         return true;
     } else {
         // standard event processing
