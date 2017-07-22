@@ -45,7 +45,7 @@ GuiApplicationImpl::GuiApplicationImpl()
 	// app{(QCoreApplication::setEventDispatcher(&this->event_dispatcher), argc), &argv}
 	app{argc, &argv}
 {
-	qDebug("Installing event filters...");
+	qDebug() << "Installing event filters...";
 	this->app.installNativeEventFilter(&this->native_event_filter);
 	this->app.installEventFilter(&this->event_filter);
 

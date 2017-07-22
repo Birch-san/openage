@@ -7,7 +7,7 @@
 
 bool CocoaNativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *message, long *)
 {
-	qDebug("NATIVE EVENT");
+	qDebug() << "NATIVE EVENT";
     if (eventType == "mac_generic_NSEvent") {
         // NSEvent *event = static_cast<NSEvent *>(message);
         // if ([event type] == NSKeyDown) {
