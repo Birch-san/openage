@@ -26,6 +26,9 @@ GuiApplicationImpl::~GuiApplicationImpl() {
 
 void GuiApplicationImpl::processEvents() {
 	assert(std::this_thread::get_id() == this->owner);
+	qDebug("Installing event filters...");
+	this->app.installNativeEventFilter(&this->native_event_filter);
+	this->app.installEventFilter(&this->event_filter);
 	this->app.processEvents();
 }
 
@@ -40,8 +43,10 @@ GuiApplicationImpl::GuiApplicationImpl()
 #ifndef NDEBUG
 	owner{std::this_thread::get_id()},
 #endif
-	event_dispatcher{},
-	app{(QCoreApplication::setEventDispatcher(&this->event_dispatcher), argc), &argv}
+	event_filter{},
+	native_event_filter{},
+	// app{(QCoreApplication::setEventDispatcher(&this->event_dispatcher), argc), &argv}
+	app{argc, &argv}
 {
 	// Set locale back to POSIX for the decimal point parsing (see qcoreapplication.html#locale-settings).
 	std::locale::global(std::locale().combine<std::numpunct<char>>(std::locale::classic()));

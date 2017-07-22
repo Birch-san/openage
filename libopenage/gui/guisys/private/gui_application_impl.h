@@ -7,7 +7,9 @@
 
 #include <QGuiApplication>
 
-#include "QEventDispatcherImpl.h"
+// #include "QEventDispatcherImpl.h"
+#include "mycocoaeventfilter.h"
+#include "KeyPressEater.h"
 
 namespace qtsdl {
 
@@ -24,6 +26,9 @@ public:
 
 	void processEvents();
 
+	KeyPressEater event_filter;
+	CocoaNativeEventFilter native_event_filter;
+
 private:
 	GuiApplicationImpl();
 
@@ -33,8 +38,6 @@ private:
 #ifndef NDEBUG
 	const std::thread::id owner;
 #endif
-
-	QEventDispatcherImpl event_dispatcher;
 	QGuiApplication app;
 
 	static std::weak_ptr<GuiApplicationImpl> instance;
