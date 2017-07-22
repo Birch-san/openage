@@ -13,11 +13,22 @@ namespace qtsdl {
 std::weak_ptr<GuiApplicationImpl> GuiApplicationImpl::instance;
 
 std::shared_ptr<GuiApplicationImpl> GuiApplicationImpl::get() {
+	qDebug("Grabbing app...");
+
 	std::shared_ptr<GuiApplicationImpl> candidate = GuiApplicationImpl::instance.lock();
 
 	assert(!candidate || std::this_thread::get_id() == candidate->owner);
 
-	return candidate ? candidate : std::shared_ptr<GuiApplicationImpl>{new GuiApplicationImpl};
+	if (candidate) {
+		return candidate;
+	}
+
+	GuiApplicationImpl* impl = new GuiApplicationImpl;
+	qDebug("Installing event filters...");
+	impl->app.installNativeEventFilter(&impl->native_event_filter);
+	impl->app.installEventFilter(&impl->event_filter);
+
+	return std::shared_ptr<GuiApplicationImpl>{impl};
 }
 
 GuiApplicationImpl::~GuiApplicationImpl() {
@@ -26,9 +37,6 @@ GuiApplicationImpl::~GuiApplicationImpl() {
 
 void GuiApplicationImpl::processEvents() {
 	assert(std::this_thread::get_id() == this->owner);
-	qDebug("Installing event filters...");
-	this->app.installNativeEventFilter(&this->native_event_filter);
-	this->app.installEventFilter(&this->event_filter);
 	this->app.processEvents();
 }
 
