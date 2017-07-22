@@ -26,10 +26,6 @@ public:
 
 	void processEvents();
 
-	KeyPressEater event_filter;
-	CocoaNativeEventFilter native_event_filter;
-	QGuiApplication app;
-
 private:
 	GuiApplicationImpl();
 
@@ -39,6 +35,10 @@ private:
 #ifndef NDEBUG
 	const std::thread::id owner;
 #endif
+
+	KeyPressEater event_filter;
+	CocoaNativeEventFilter native_event_filter;
+	QGuiApplication app;
 
 	static std::weak_ptr<GuiApplicationImpl> instance;
 };

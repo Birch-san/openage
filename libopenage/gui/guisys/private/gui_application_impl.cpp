@@ -13,22 +13,11 @@ namespace qtsdl {
 std::weak_ptr<GuiApplicationImpl> GuiApplicationImpl::instance;
 
 std::shared_ptr<GuiApplicationImpl> GuiApplicationImpl::get() {
-	qDebug("Grabbing app...");
-
 	std::shared_ptr<GuiApplicationImpl> candidate = GuiApplicationImpl::instance.lock();
 
 	assert(!candidate || std::this_thread::get_id() == candidate->owner);
 
-	if (candidate) {
-		return candidate;
-	}
-
-	GuiApplicationImpl* impl = new GuiApplicationImpl;
-	qDebug("Installing event filters...");
-	impl->app.installNativeEventFilter(&impl->native_event_filter);
-	impl->app.installEventFilter(&impl->event_filter);
-
-	return std::shared_ptr<GuiApplicationImpl>{impl};
+	return candidate ? candidate : std::shared_ptr<GuiApplicationImpl>{new GuiApplicationImpl};
 }
 
 GuiApplicationImpl::~GuiApplicationImpl() {
@@ -56,6 +45,10 @@ GuiApplicationImpl::GuiApplicationImpl()
 	// app{(QCoreApplication::setEventDispatcher(&this->event_dispatcher), argc), &argv}
 	app{argc, &argv}
 {
+	qDebug("Installing event filters...");
+	this->app.installNativeEventFilter(&this->native_event_filter);
+	this->app.installEventFilter(&this->event_filter);
+
 	// Set locale back to POSIX for the decimal point parsing (see qcoreapplication.html#locale-settings).
 	std::locale::global(std::locale().combine<std::numpunct<char>>(std::locale::classic()));
 
