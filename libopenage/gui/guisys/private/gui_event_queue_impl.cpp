@@ -34,6 +34,7 @@ void GuiEventQueueImpl::process_callbacks() {
 	assert(QThread::currentThread() == this->thread);
 #ifdef __APPLE__
 	if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
+	qWarning() << "Processing of event queue will continue for thread: " << QThread::currentThread();
 #endif
 	this->callback_processor.processEvents();
 }

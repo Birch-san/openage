@@ -33,6 +33,7 @@ void GuiApplicationImpl::processEvents() {
 	assert(std::this_thread::get_id() == this->owner);
 #ifdef __APPLE__
 	if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
+	qWarning() << "Processing of GUI application events will continue for thread: " << QThread::currentThread();
 #endif
 	this->app.processEvents();
 }
