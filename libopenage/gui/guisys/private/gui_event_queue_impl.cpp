@@ -34,7 +34,7 @@ void GuiEventQueueImpl::process_callbacks() {
 	assert(QThread::currentThread() == this->thread);
 #ifdef __APPLE__
 	// btw this condition is always true, as far as I've noticed:
-	if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
+	// if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
 	qWarning() << "Processing of event queue will continue for thread: " << QThread::currentThread();
 	// if you are using the default macOS event dispatcher, and 
 	// you allow this class to invoke processEvents(): 

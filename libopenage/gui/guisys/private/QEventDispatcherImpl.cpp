@@ -51,7 +51,7 @@ bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags f
         emit awake();
     }
 
-    int events;
+    int events = 0;
     do
     {
         // if (!(flags & QEventLoop::X11ExcludeTimers)) {

@@ -7,7 +7,6 @@
 
 #include <QGuiApplication>
 
-#include "QEventDispatcherImpl.h"
 #include "mycocoaeventfilter.h"
 #include "KeyPressEater.h"
 
@@ -38,7 +37,6 @@ private:
 
 	KeyPressEater event_filter;
 	CocoaNativeEventFilter native_event_filter;
-	QEventDispatcherImpl event_dispatcher;
 	QGuiApplication app;
 
 	static std::weak_ptr<GuiApplicationImpl> instance;
