@@ -176,6 +176,8 @@ GLuint GuiRendererImpl::render() {
 
 	this->window->resetOpenGLState();
 
+	glFinish();
+
 	return this->fbo->texture();
 }
 
