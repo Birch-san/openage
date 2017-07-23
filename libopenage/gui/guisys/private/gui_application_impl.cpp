@@ -32,9 +32,14 @@ GuiApplicationImpl::~GuiApplicationImpl() {
 void GuiApplicationImpl::processEvents() {
 	assert(std::this_thread::get_id() == this->owner);
 #ifdef __APPLE__
+	// btw this condition is always true, as far as I've noticed:
 	if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
 	qWarning() << "Processing of GUI application events will continue for thread: " << QThread::currentThread();
-	// if you allow this class to invoke processEvents(): we will only ever see `NATIVE EVENT:  "mac_generic_NSEvent"` in our logger.
+	// if you are using the default macOS event dispatcher, and 
+	// you allow this class to invoke processEvents(): 
+	// _only_ native events `NATIVE EVENT:  "mac_generic_NSEvent"` will appear in our logger.
+	// i.e. no QTimer events will be handled.
+	// additionally: the following call to processEvents() will never finish.
 #endif
 	this->app.processEvents();
 	qWarning() << "Finished processing of GUI application events for thread: " << QThread::currentThread();
@@ -53,8 +58,8 @@ GuiApplicationImpl::GuiApplicationImpl()
 #endif
 	event_filter{},
 	native_event_filter{},
-	// app{(QCoreApplication::setEventDispatcher(&this->event_dispatcher), argc), &argv}
-	app{argc, &argv}
+	app{(QCoreApplication::setEventDispatcher(&this->event_dispatcher), argc), &argv}
+	// app{argc, &argv}
 {
 	// Set locale back to POSIX for the decimal point parsing (see qcoreapplication.html#locale-settings).
 	std::locale::global(std::locale().combine<std::numpunct<char>>(std::locale::classic()));

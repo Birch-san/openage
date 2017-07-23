@@ -33,12 +33,17 @@ GuiEventQueueImpl* GuiEventQueueImpl::impl(GuiEventQueue *event_queue) {
 void GuiEventQueueImpl::process_callbacks() {
 	assert(QThread::currentThread() == this->thread);
 #ifdef __APPLE__
+	// btw this condition is always true, as far as I've noticed:
 	if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
 	qWarning() << "Processing of event queue will continue for thread: " << QThread::currentThread();
-	// if you allow this class to invoke processEvents(): we will only ever see `NATIVE EVENT:  "mac_generic_NSEvent"` in our logger.
+	// if you are using the default macOS event dispatcher, and 
+	// you allow this class to invoke processEvents(): 
+	// _only_ native events `NATIVE EVENT:  "mac_generic_NSEvent"` will appear in our logger.
+	// i.e. no QTimer events will be handled.
+	// additionally: the following call to processEvents() will never finish.
 #endif
 	this->callback_processor.processEvents();
-	qWarning() << "Finished processing of event queue for thread: " << QThread::currentThread();
+	qWarning() << "Finished processing of local event loop for thread: " << QThread::currentThread();
 }
 
 QThread* GuiEventQueueImpl::get_thread() {
