@@ -5,6 +5,7 @@
 #include <cassert>
 
 #include <QThread>
+#include <QtDebug>
 
 #include "../public/gui_event_queue.h"
 
@@ -16,6 +17,8 @@ GuiEventQueueImpl::GuiEventQueueImpl()
 }
 
 GuiEventQueueImpl::~GuiEventQueueImpl() {
+	qInfo() << "Installing event filters...";
+	this->callback_processor.installEventFilter(&this->event_filter);
 }
 
 GuiEventQueueImpl* GuiEventQueueImpl::impl(GuiEventQueue *event_queue) {

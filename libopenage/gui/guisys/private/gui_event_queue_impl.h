@@ -5,6 +5,9 @@
 #include <QtGlobal>
 #include <QEventLoop>
 
+// #include "QEventDispatcherImpl.h"
+#include "KeyPressEater.h"
+
 QT_FORWARD_DECLARE_CLASS(QThread)
 
 namespace qtsdl {
@@ -28,6 +31,7 @@ public:
 private:
 	QThread * const thread;
 	QEventLoop callback_processor;
+	KeyPressEater event_filter;
 };
 
 } // namespace qtsdl
