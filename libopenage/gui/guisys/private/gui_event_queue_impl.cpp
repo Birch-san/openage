@@ -22,7 +22,7 @@ GuiEventQueueImpl::GuiEventQueueImpl()
 
 GuiEventQueueImpl::~GuiEventQueueImpl() {
 	// our QEventLoop is a "local event loop", so maybe it has no filters on it yet
-	qInfo() << "Installing event filters...";
+	qInfo() << "Installing event filters into GuiEventQueue's QEventLoop...";
 	this->callback_processor.installEventFilter(&this->event_filter);
 }
 
@@ -38,6 +38,7 @@ void GuiEventQueueImpl::process_callbacks() {
 	// if you allow this class to invoke processEvents(): we will only ever see `NATIVE EVENT:  "mac_generic_NSEvent"` in our logger.
 #endif
 	this->callback_processor.processEvents();
+	qWarning() << "Finished processing of event queue for thread: " << QThread::currentThread();
 }
 
 QThread* GuiEventQueueImpl::get_thread() {

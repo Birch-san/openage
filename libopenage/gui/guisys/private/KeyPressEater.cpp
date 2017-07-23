@@ -6,7 +6,7 @@
 
 bool KeyPressEater::eventFilter(QObject *obj, QEvent *event)
 {
-    qInfo() << "EVENT: " << event->type();
+    // qInfo() << "EVENT: " << event->type();
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
         qInfo("Ate key press %d", keyEvent->key());

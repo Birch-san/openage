@@ -37,6 +37,7 @@ void GuiApplicationImpl::processEvents() {
 	// if you allow this class to invoke processEvents(): we will only ever see `NATIVE EVENT:  "mac_generic_NSEvent"` in our logger.
 #endif
 	this->app.processEvents();
+	qWarning() << "Finished processing of GUI application events for thread: " << QThread::currentThread();
 }
 
 namespace {
@@ -59,7 +60,7 @@ GuiApplicationImpl::GuiApplicationImpl()
 	std::locale::global(std::locale().combine<std::numpunct<char>>(std::locale::classic()));
 
 	qInfo() << "Compiled with Qt" << QT_VERSION_STR << "and run with Qt" << qVersion();
-	qInfo() << "Installing event filters...";
+	qInfo() << "Installing event filters into GuiApplicationImpl...";
 	this->app.installNativeEventFilter(&this->native_event_filter);
 	this->app.installEventFilter(&this->event_filter);
 }
