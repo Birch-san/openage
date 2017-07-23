@@ -35,6 +35,7 @@ void GuiEventQueueImpl::process_callbacks() {
 #ifdef __APPLE__
 	if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
 	qWarning() << "Processing of event queue will continue for thread: " << QThread::currentThread();
+	// if you allow this class to invoke processEvents(): we will only ever see `NATIVE EVENT:  "mac_generic_NSEvent"` in our logger.
 #endif
 	this->callback_processor.processEvents();
 }
