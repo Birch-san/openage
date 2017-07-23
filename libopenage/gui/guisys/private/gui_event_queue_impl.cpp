@@ -7,6 +7,10 @@
 #include <QThread>
 #include <QtDebug>
 
+#ifdef __APPLE__
+	#include <QCoreApplication>
+#endif
+
 #include "../public/gui_event_queue.h"
 
 namespace qtsdl {
@@ -17,6 +21,7 @@ GuiEventQueueImpl::GuiEventQueueImpl()
 }
 
 GuiEventQueueImpl::~GuiEventQueueImpl() {
+	// our QEventLoop is a "local event loop", so maybe it has no filters on it yet
 	qInfo() << "Installing event filters...";
 	this->callback_processor.installEventFilter(&this->event_filter);
 }
@@ -27,6 +32,9 @@ GuiEventQueueImpl* GuiEventQueueImpl::impl(GuiEventQueue *event_queue) {
 
 void GuiEventQueueImpl::process_callbacks() {
 	assert(QThread::currentThread() == this->thread);
+#ifdef __APPLE__
+	if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
+#endif
 	this->callback_processor.processEvents();
 }
 

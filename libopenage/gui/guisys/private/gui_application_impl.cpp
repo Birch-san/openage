@@ -8,6 +8,11 @@
 #include <QtGlobal>
 #include <QtDebug>
 
+#ifdef __APPLE__
+	#include <QThread>
+	#include <QCoreApplication>
+#endif
+
 namespace qtsdl {
 
 std::weak_ptr<GuiApplicationImpl> GuiApplicationImpl::instance;
@@ -26,6 +31,9 @@ GuiApplicationImpl::~GuiApplicationImpl() {
 
 void GuiApplicationImpl::processEvents() {
 	assert(std::this_thread::get_id() == this->owner);
+#ifdef __APPLE__
+	if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
+#endif
 	this->app.processEvents();
 }
 
