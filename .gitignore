@@ -61,3 +61,7 @@ perf.data*
 /GPATH
 /GRTAGS
 /GTAGS
+
+# IntelliJ IDEA/CLion IDE
+.idea
+cmake-build-debug
