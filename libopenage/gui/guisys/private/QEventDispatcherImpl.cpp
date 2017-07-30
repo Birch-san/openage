@@ -12,6 +12,7 @@
 #include <QSocketNotifier>
 #include <cassert>
 #include <QThread>
+#include "qthread_p.h"
 
 //#include <QtGlobal>
 
@@ -99,7 +100,9 @@ bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags f
 }
 bool qtsdl::QEventDispatcherImpl::hasPendingEvents() { // ### Qt6: remove, mark final or make protected
     qWarning() << "hasPendingEvents()";
-    return true;
+    // extern uint qGlobalPostedEventsCount(); // from qapplication.cpp
+    QThreadData *currentThreadData = QThreadData::current();
+    return currentThreadData->postEventList.size() - currentThreadData->postEventList.startOffset;
 }
 
 void qtsdl::QEventDispatcherImpl::registerSocketNotifier(QSocketNotifier *notifier) {
