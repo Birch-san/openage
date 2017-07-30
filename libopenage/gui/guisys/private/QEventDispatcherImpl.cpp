@@ -34,6 +34,17 @@ bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags f
 //    qInfo() << flags;
 
     while (!this->interrupted) {
+
+//        timespec *tm = nullptr;
+        timespec wait_tm = { 0, 0 };
+
+        if (!(flags & QEventLoop::X11ExcludeTimers)) {
+            if (this->timerList.timerWait(wait_tm)) {
+//                tm = &wait_tm;
+                this->timerList.activateTimers();
+            }
+        }
+
         if (!(flags & QEventLoop::ExcludeSocketNotifiers))
         {
             fd_set read_fd_set;
