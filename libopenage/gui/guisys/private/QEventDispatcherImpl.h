@@ -4,7 +4,12 @@
 
 #include <QAbstractEventDispatcher>
 #include <QEventLoop>
-#include <QAtomicInt>
+//#include <QAtomicInt>
+#include <atomic>
+#include <vector>
+#include <unordered_map>
+#include <QSocketNotifier>
+
 
 namespace qtsdl {
 
@@ -41,7 +46,9 @@ class QEventDispatcherImpl : public QAbstractEventDispatcher {
 	    virtual void closingDown();
 
 	protected:
-		QAtomicInt interruptor;
+//		QAtomicInt interruptor;
+		std::vector<QSocketNotifier*> socket_notifiers;
+		std::atomic_bool interrupted;
 };
 
 } // namespace qtsdl

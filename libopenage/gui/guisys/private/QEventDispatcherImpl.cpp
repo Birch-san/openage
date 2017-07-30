@@ -8,6 +8,10 @@
 #include <QtDebug> 
 // #include <QWindowSystemInterface>
 
+#include <sys/select.h>
+#include <QSocketNotifier>
+#include <cassert>
+
 namespace qtsdl {
 
 qtsdl::QEventDispatcherImpl::QEventDispatcherImpl(QObject *parent)
@@ -23,62 +27,72 @@ qtsdl::QEventDispatcherImpl::~QEventDispatcherImpl() {
 * https://github.com/peper0/qtasio/blob/master/qasioeventdispatcher.h
 */
 bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags flags) {
-//    qWarning() << "processFlags()";
-    interruptor.store(0);
-    //QCoreApplicationPrivate::sendPostedEvents(0, 0, d->threadData); //unix dispatcher use this
-    QCoreApplication::sendPostedEvents(); //glib dispatcher call this after every call of "awake".
+    bool had_events = false;
+//    qInfo() << flags;
 
-    const bool canWait = (/*d->threadData->canWaitLocked()
-                          &&*/ !interruptor.load() //it may have been set during the call of QCoreApplication::sendPostedEvents()
-&& (flags & QEventLoop::WaitForMoreEvents));
+    while (!this->interrupted) {
+        if (!(flags & QEventLoop::ExcludeSocketNotifiers))
+        {
+            fd_set read_fd_set;
+            fd_set write_fd_set;
+            fd_set except_fd_set;
+            struct timeval timeout = {};
+            fd_set* fd_sets[3] = {&read_fd_set, &write_fd_set, &except_fd_set};
+            static_assert(QSocketNotifier::Read == 0, "QSocketNotifier::Type enum incompatible");
+            static_assert(QSocketNotifier::Write == 1, "QSocketNotifier::Type enum incompatible");
+            static_assert(QSocketNotifier::Exception == 2, "QSocketNotifier::Type enum incompatible");
 
-    if (interruptor.load())
-    {
-        return false; //unix event dispatcher returns false if nothing more than "postedEvents" were dispatched
-    }
+            FD_ZERO(&read_fd_set);
+            FD_ZERO(&write_fd_set);
+            FD_ZERO(&except_fd_set);
 
-    // if (!(flags & QEventLoop::X11ExcludeTimers)) {
-    //     d->timerStart();
-    // }
+            for (auto notifier : this->socket_notifiers)
+                switch (notifier->type()) {
+                    case QSocketNotifier::Read:
+                    case QSocketNotifier::Write:
+                    case QSocketNotifier::Exception:
+                        FD_SET(notifier->socket(), fd_sets[notifier->type()]);
+                        break;
+                    default:
+                        assert(false);
+                        break;
+                }
 
-    int total_events = 0; /* FIXME: +1 for stop? */
-
-    if (canWait) {
-        //run at least one handler - may block
-        emit aboutToBlock();
-        // d->io_service.reset();
-        // total_events += d->io_service.run_one();
-        emit awake();
-    }
-
-    int events = 0;
-    do
-    {
-        // if (!(flags & QEventLoop::X11ExcludeTimers)) {
-        //     d->timerStart();
-        // }
-
-        // d->io_service.reset();
-        //run all ready handlers
-        // events = d->io_service.poll();
-
-        if ((flags & QEventLoop::ExcludeSocketNotifiers)) {
-            //FIXME: ignore stream descriptors
+            emit this->aboutToBlock();
+            if (select(FD_SETSIZE, &read_fd_set, &write_fd_set, &except_fd_set, &timeout) < 0)
+            {
+                emit this->awake();
+                qCritical() << "socket notifier failed";
+            }
+            else
+            {
+                emit this->awake();
+                QEvent event(QEvent::SockAct);
+                for (auto notifier : this->socket_notifiers)
+                    switch (notifier->type()) {
+                        case QSocketNotifier::Read:
+                        case QSocketNotifier::Write:
+                        case QSocketNotifier::Exception:
+                            if (FD_ISSET(notifier->socket(), fd_sets[notifier->type()])) {
+                                qInfo() << "evt";
+                                QCoreApplication::sendEvent(notifier, &event);
+                                had_events = true;
+                            }
+                            break;
+                        default:
+                            assert(false);
+                            break;
+                    }
+            }
         }
 
-        if ((flags & QEventLoop::X11ExcludeTimers)) {
-            //FIXME: ignore timers?
-        }
-
-        total_events += events;
         QCoreApplication::sendPostedEvents();
-        // total_events += QWindowSystemInterface::sendWindowSystemEvents(flags) ? 1 : 0;
-    } while(events>0);
 
-    // d->cleanupSocketNotifiers();
+        if (!(flags & QEventLoop::WaitForMoreEvents))
+            break;
+    }
 
-    // return true if we handled events, false otherwise
-    return (total_events > 0);
+    return had_events;
 }
 bool qtsdl::QEventDispatcherImpl::hasPendingEvents() { // ### Qt6: remove, mark final or make protected
     qWarning() << "hasPendingEvents()";
