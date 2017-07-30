@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <QSocketNotifier>
 #include <QList>
-#include "qtimerinfo_unix.h"
+#include "qtimerinfo_unix_p.h"
 
 namespace qtsdl {
 
