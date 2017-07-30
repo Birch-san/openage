@@ -5,12 +5,14 @@
 #include <QList>
 #include <QEventLoop>
 #include <QCoreApplication>
-#include <QtDebug> 
+#include <QtDebug>
 // #include <QWindowSystemInterface>
 
 #include <sys/select.h>
 #include <QSocketNotifier>
 #include <cassert>
+
+//#include <QtGlobal>
 
 namespace qtsdl {
 
@@ -119,7 +121,13 @@ bool qtsdl::QEventDispatcherImpl::unregisterTimers(QObject *object) {
 }
 QList<QAbstractEventDispatcher::TimerInfo> qtsdl::QEventDispatcherImpl::registeredTimers(QObject *object) const {
     qWarning() << "registeredTimers()";
-    return *new QList<QAbstractEventDispatcher::TimerInfo>();
+//    return *new QList<QAbstractEventDispatcher::TimerInfo>();
+    if (!object) {
+        qWarning("QEventDispatcherUNIX:registeredTimers: invalid argument");
+        return QList<TimerInfo>();
+    }
+
+    return this->timerList.registeredTimers(object);
 }
 
 int qtsdl::QEventDispatcherImpl::remainingTime(int timerId) {

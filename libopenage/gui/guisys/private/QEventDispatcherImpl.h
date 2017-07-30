@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <QSocketNotifier>
 #include <QList>
+#include "qtimerinfo_unix.h"
 
 namespace qtsdl {
 
@@ -48,7 +49,8 @@ class QEventDispatcherImpl : public QAbstractEventDispatcher {
 	protected:
 //		QAtomicInt interruptor;
 		std::vector<QSocketNotifier*> socket_notifiers;
-        std::unordered_map<int, QList<QAbstractEventDispatcher::TimerInfo>> timer_infos;
+        QTimerInfoList timerList;
+//        std::unordered_map<int, QList<QAbstractEventDispatcher::TimerInfo>> timer_infos;
 		std::atomic_bool interrupted;
 };
 
