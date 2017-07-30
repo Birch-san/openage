@@ -23,7 +23,7 @@ qtsdl::QEventDispatcherImpl::~QEventDispatcherImpl() {
 * https://github.com/peper0/qtasio/blob/master/qasioeventdispatcher.h
 */
 bool qtsdl::QEventDispatcherImpl::processEvents(QEventLoop::ProcessEventsFlags flags) {
-    qWarning() << "processFlags()";
+//    qWarning() << "processFlags()";
     interruptor.store(0);
     //QCoreApplicationPrivate::sendPostedEvents(0, 0, d->threadData); //unix dispatcher use this
     QCoreApplication::sendPostedEvents(); //glib dispatcher call this after every call of "awake".

@@ -11,6 +11,15 @@ import yay.sfttech.openage 1.0 as OA
 Item {
 	id: root
 
+	Timer {
+        interval: 500
+        running: true
+        repeat: true
+        onTriggered: time.text = Date().toString()
+    }
+
+    Text { id: time }
+
 	/*
 	 * Global metric declaration.
 	 */

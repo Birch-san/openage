@@ -35,7 +35,7 @@ void GuiEventQueueImpl::process_callbacks() {
 #ifdef __APPLE__
 	// btw this condition is always true, as far as I've noticed:
 	// if (QThread::currentThread() == QCoreApplication::instance()->thread()) return;
-	qWarning() << "Processing of event queue will continue for thread: " << QThread::currentThread();
+	// qWarning() << "Processing of event queue will continue for thread: " << QThread::currentThread();
 	// if you are using the default macOS event dispatcher, and 
 	// you allow this class to invoke processEvents(): 
 	// _only_ native events `NATIVE EVENT:  "mac_generic_NSEvent"` will appear in our logger.
@@ -43,7 +43,7 @@ void GuiEventQueueImpl::process_callbacks() {
 	// additionally: the following call to processEvents() will never finish.
 #endif
 	this->callback_processor.processEvents();
-	qWarning() << "Finished processing of local event loop for thread: " << QThread::currentThread();
+	// qWarning() << "Finished processing of local event loop for thread: " << QThread::currentThread();
 }
 
 QThread* GuiEventQueueImpl::get_thread() {
