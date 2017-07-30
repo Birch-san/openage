@@ -9,7 +9,7 @@
 #include <vector>
 #include <unordered_map>
 #include <QSocketNotifier>
-
+#include <QList>
 
 namespace qtsdl {
 
@@ -48,6 +48,7 @@ class QEventDispatcherImpl : public QAbstractEventDispatcher {
 	protected:
 //		QAtomicInt interruptor;
 		std::vector<QSocketNotifier*> socket_notifiers;
+        std::unordered_map<int, QList<QAbstractEventDispatcher::TimerInfo>> timer_infos;
 		std::atomic_bool interrupted;
 };
 
