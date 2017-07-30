@@ -47,6 +47,20 @@ ButtonStyle {
 
 				text: control.text
 			}
+
+
+
+            Timer {
+                interval: 500
+                running: true
+                repeat: true
+                onTriggered: time.text = Date().toString()
+            }
+
+            Text {
+            id: time
+            color: d.color
+            text: "hey bby" }
 		}
 	}
 }
