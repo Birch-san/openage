@@ -11,6 +11,7 @@
 #include <sys/select.h>
 #include <QSocketNotifier>
 #include <cassert>
+#include <QThread>
 
 //#include <QtGlobal>
 
@@ -110,17 +111,49 @@ void qtsdl::QEventDispatcherImpl::unregisterSocketNotifier(QSocketNotifier *noti
 
 void qtsdl::QEventDispatcherImpl::registerTimer(int timerId, int interval, Qt::TimerType timerType, QObject *object) {
     qWarning() << "registerTimer()";
+#ifndef QT_NO_DEBUG
+    if (timerId < 1 || interval < 0 || !object) {
+        qWarning("QEventDispatcherUNIX::registerTimer: invalid arguments");
+        return;
+    } else if (object->thread() != thread() || thread() != QThread::currentThread()) {
+        qWarning("QEventDispatcherUNIX::registerTimer: timers cannot be started from another thread");
+        return;
+    }
+#endif
+
+    this->timerList.registerTimer(timerId, interval, timerType, object);
 }
 bool qtsdl::QEventDispatcherImpl::unregisterTimer(int timerId) {
     qWarning() << "unregisterTimer()";
-    return true;
+#ifndef QT_NO_DEBUG
+    if (timerId < 1) {
+        qWarning("QEventDispatcherUNIX::unregisterTimer: invalid argument");
+        return false;
+    } else if (thread() != QThread::currentThread()) {
+        qWarning("QEventDispatcherUNIX::unregisterTimer: timers cannot be stopped from another thread");
+        return false;
+    }
+#endif
+
+    return this->timerList.unregisterTimer(timerId);
 }
 bool qtsdl::QEventDispatcherImpl::unregisterTimers(QObject *object) {
     qWarning() << "unregisterTimers()";
-    return true;
+#ifndef QT_NO_DEBUG
+    if (!object) {
+        qWarning("QEventDispatcherUNIX::unregisterTimers: invalid argument");
+        return false;
+    } else if (object->thread() != thread() || thread() != QThread::currentThread()) {
+        qWarning("QEventDispatcherUNIX::unregisterTimers: timers cannot be stopped from another thread");
+        return false;
+    }
+#endif
+
+    return this->timerList.unregisterTimers(object);
 }
 QList<QAbstractEventDispatcher::TimerInfo> qtsdl::QEventDispatcherImpl::registeredTimers(QObject *object) const {
     qWarning() << "registeredTimers()";
+//    return QList<TimerInfo>();
 //    return *new QList<QAbstractEventDispatcher::TimerInfo>();
     if (!object) {
         qWarning("QEventDispatcherUNIX:registeredTimers: invalid argument");
