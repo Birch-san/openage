@@ -13,7 +13,8 @@
 	#include <QCoreApplication>
 #endif
 
-#include "QEventDispatcherImpl.h"
+//#include "QEventDispatcherImpl.h"
+#include "qeventdispatcher_unix_p.h"
 
 namespace qtsdl {
 
@@ -60,7 +61,7 @@ GuiApplicationImpl::GuiApplicationImpl()
 #endif
 	event_filter{},
 	native_event_filter{},
-	app{(QCoreApplication::setEventDispatcher(new QEventDispatcherImpl), argc), &argv}
+	app{(QCoreApplication::setEventDispatcher(new QEventDispatcherUNIX), argc), &argv}
 	// app{argc, &argv}
 {
 	// Set locale back to POSIX for the decimal point parsing (see qcoreapplication.html#locale-settings).
